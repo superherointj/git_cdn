@@ -273,8 +273,14 @@ class GitCDN:
         # FIXME: check_auth maybe implementable via middleware
         check_auth(request)
 
+        # get git protocol version from headers (must be case-insensitive!)
+        git_protocol = None
+        for key in h.keys():
+            if key.lower() == "git-protocol":
+                git_protocol = h.get(key)
+                break
+
         protocol_version = 1
-        git_protocol = h.get("Git-Protocol")
         if git_protocol is not None:
             version = PROTOCOL_VERSION_RE.match(git_protocol)
             if version is not None:
