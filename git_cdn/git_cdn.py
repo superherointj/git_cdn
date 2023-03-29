@@ -42,7 +42,7 @@ parallel_request = 0
 PROTOCOL_VERSION_RE = re.compile(r"^version=(\d+)$")
 RUNNING_LOOP = ""
 WORKER_PID = -1
-GUNICORN_WORKER_NB = int(os.getenv("GUNICORN_WORKER", "8"))
+GUNICORN_WORKER_NB = int(os.getenv("GUNICORN_WORKER", cpu_count()))
 
 
 def fix_response_headers(headers):
@@ -118,7 +118,9 @@ def hide_auth_on_headers(h):
 
 
 class GitCDN:
-    MAX_CONNECTIONS = int(os.getenv("MAX_CONNECTIONS", "10"))
+    MAX_CONNECTIONS = int(
+        max(10, int(os.getenv("MAX_CONNECTIONS", "10")) / GUNICORN_WORKER_NB)
+    )
     MAX_SEMAPHORE = int(
         max(
             1,
