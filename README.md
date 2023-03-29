@@ -141,7 +141,10 @@ REQUEST_MAX_RETRIES=10      # Number of retries that happen for http requests pr
 BACKOFF_START=0.5           # exponential backoff timer to use between upstream git fetch retries (doubles for each try)
 BACKOFF_COUNT=5             # backoff retry count for git fetch retries
 
-MAX_CONNECTIONS=10          # Maximum number of connection that git_cdn will create to upstream server per gunicorn worker
+MAX_CONNECTIONS=10          # Maximum number of connection that git_cdn will create to upstream server
+                            # this number will be assign/divided by gunicorn worker number
+MAX_GIT_UPLOAD_PACK=cpu_count() # Maximum upload pack that git_cdn will handle
+                                # this number will be assign/divided by gunicorn worker number
 GIT_SSL_NO_VERIFY=          # can be used for staging infra when self signed SSL certificates are used (not for prod!)
 
 # protection from git hangs
