@@ -218,7 +218,7 @@ def enable_console_logs(level=None, output=sys.stdout, context=False):
 def bind_context_from_exp(exp):
     if isinstance(exp, HTTPException):
         bind_contextvars(exception_reason=exp.reason)
-    else:
-        bind_contextvars(
-            exception_type=object_module_name(exp), exception=traceback.format_exc()
-        )
+
+    bind_contextvars(
+        exception_type=object_module_name(exp), exception=traceback.format_exc()
+    )

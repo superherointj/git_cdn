@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import time
-import traceback
 import uuid
 from concurrent.futures import CancelledError
 from multiprocessing import cpu_count
@@ -480,11 +479,6 @@ class GitCDN:
                 "response_size": output_size,
                 "response_status": getattr(response, "status", 500),
             }
-        if isinstance(response, BaseException):
-            e = response
-            response_stats["exception"] = "".join(
-                traceback.format_exception(type(e), e, e.__traceback__)
-            )
 
         log.info(
             "Response stats",
