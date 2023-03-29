@@ -87,6 +87,24 @@ def check_auth(request):
         raise HTTPUnauthorized(headers={"WWW-Authenticate": 'Basic realm="Git Proxy"'})
 
 
+# get git protocol version from headers (must be case-insensitive!)
+def get_protocol_version(h: dict) -> int:
+    git_protocol = None
+    protocol_version = 1
+
+    for key in h.keys():
+        if key.lower() == "git-protocol":
+            git_protocol = h.get(key)
+            break
+
+    if git_protocol is not None:
+        version = PROTOCOL_VERSION_RE.match(git_protocol)
+        if version is not None:
+            protocol_version = int(version.group(1))
+
+    return protocol_version
+
+
 def redirect_browsers(request, upstream):
     """This method provides a quick way to redirect to correct path and force
     git to authenticate"""
@@ -274,12 +292,7 @@ class GitCDN:
         # FIXME: check_auth maybe implementable via middleware
         check_auth(request)
 
-        protocol_version = 1
-        git_protocol = h.get("Git-Protocol")
-        if git_protocol is not None:
-            version = PROTOCOL_VERSION_RE.match(git_protocol)
-            if version is not None:
-                protocol_version = int(version.group(1))
+        protocol_version = get_protocol_version(h)
         bind_contextvars(git_protocol_version=protocol_version)
 
         if method == "post" and path.endswith("git-upload-pack"):
